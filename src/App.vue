@@ -104,17 +104,48 @@ function handleSaveRecipe() {
 <style lang="scss">
 body,
 html {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
   background-color: #6e4228;
   background: linear-gradient(to bottom, #6e4228 0%, #956f5a 100%);
+  font-family: Arial, sans-serif;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  min-height: 100vh;
 }
 
 ul {
   list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  
+  li {
+    margin: 15px 0;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    
+    label {
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 16px;
+      
+      input[type="radio"] {
+        cursor: pointer;
+      }
+    }
+  }
 }
 
 .recipe-controls {
@@ -143,6 +174,8 @@ ul {
   padding: 20px;
   background-color: rgba(255, 255, 255, 0.1);
   border-radius: 10px;
+  max-width: 600px;
+  width: 100%;
   
   h3 {
     color: white;
