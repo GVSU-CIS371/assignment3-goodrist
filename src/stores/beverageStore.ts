@@ -1,49 +1,140 @@
-import { defineStore } from "pinia";
-import { ref } from "vue";
+import { defineStore } from 'pinia';
+import { ref, computed } from 'vue';
+import { 
+  temps, 
+  bases, 
+  creamers, 
+  syrups,
+  type BaseBeverageType,
+  type CreamerType,
+  type SyrupType
+} from '../data/ingredients';
 
-import bases from "../data/bases.ts";
-import creamers from "../data/creamers.ts";
-import syrups from "../data/syrups.ts";
-import temps from "../data/temps.ts";
+export interface BeverageRecipe {
+  id: string;
+  name: string;
+  temperature: string;
+  base: BaseBeverageType;
+  creamer: CreamerType;
+  syrup: SyrupType;
+  createdAt: Date;
+}
 
-export const useBeverageStore = defineStore("beverageStore", () => {
-  const selectedName = ref("");
-  const selectedBase = ref(bases[0]);
-  const selectedCreamer = ref(creamers[0]);
-  const selectedSyrup = ref(syrups[0]);
-  const selectedTemp = ref(temps[0]);
+export const useBeverageStore = defineStore('beverage', () => {
+  // Import ingredient data
+  const temperatures = ref(temps);
+  const baseBeverages = ref(bases);
+  const creamerOptions = ref(creamers);
+  const syrupOptions = ref(syrups);
 
-  const recipes = ref<any[]>([]);
+  // Current selections
+  const currentTemp = ref(temperatures.value[0]); // Default: "Hot"
+  const currentBase = ref(baseBeverages.value[2]); // Default: Coffee
+  const currentCreamer = ref(creamerOptions.value[0]); // Default: No Cream
+  const currentSyrup = ref(syrupOptions.value[0]); // Default: No Syrup
 
-  function makeBeverage() {
-    if (!selectedName.value.trim()) return;
+  // Saved recipes
+  const savedRecipes = ref<BeverageRecipe[]>([]);
 
-    recipes.value.push({
-      name: selectedName.value,
-      base: selectedBase.value,
-      creamer: selectedCreamer.value,
-      syrup: selectedSyrup.value,
-      temp: selectedTemp.value
-    });
+  // Computed properties
+  const currentBeverageDescription = computed(() => {
+    let description = `${currentTemp.value} ${currentBase.value.name}`;
+    if (currentCreamer.value.name !== 'No Cream') {
+      description += ` with ${currentCreamer.value.name}`;
+    }
+    if (currentSyrup.value.name !== 'No Syrup') {
+      description += ` and ${currentSyrup.value.name} syrup`;
+    }
+    return description;
+  });
 
-    selectedName.value = "";
+  // Actions
+  function setTemperature(temp: string) {
+    currentTemp.value = temp;
   }
 
-  function showBeverage(recipe: any) {
-    selectedBase.value = recipe.base;
-    selectedCreamer.value = recipe.creamer;
-    selectedSyrup.value = recipe.syrup;
-    selectedTemp.value = recipe.temp;
+  function setBase(base: BaseBeverageType) {
+    currentBase.value = base;
+  }
+
+  function setCreamer(creamer: CreamerType) {
+    currentCreamer.value = creamer;
+  }
+
+  function setSyrup(syrup: SyrupType) {
+    currentSyrup.value = syrup;
+  }
+
+  function saveCurrentRecipe(recipeName: string) {
+    const newRecipe: BeverageRecipe = {
+      id: `recipe-${Date.now()}`,
+      name: recipeName || currentBeverageDescription.value,
+      temperature: currentTemp.value,
+      base: { ...currentBase.value },
+      creamer: { ...currentCreamer.value },
+      syrup: { ...currentSyrup.value },
+      createdAt: new Date()
+    };
+    savedRecipes.value.push(newRecipe);
+    return newRecipe;
+  }
+
+  function loadRecipe(recipeId: string) {
+    const recipe = savedRecipes.value.find(r => r.id === recipeId);
+    if (recipe) {
+      currentTemp.value = recipe.temperature;
+      currentBase.value = recipe.base;
+      currentCreamer.value = recipe.creamer;
+      currentSyrup.value = recipe.syrup;
+      return true;
+    }
+    return false;
+  }
+
+  function deleteRecipe(recipeId: string) {
+    const index = savedRecipes.value.findIndex(r => r.id === recipeId);
+    if (index !== -1) {
+      savedRecipes.value.splice(index, 1);
+      return true;
+    }
+    return false;
+  }
+
+  function clearAllRecipes() {
+    savedRecipes.value = [];
+  }
+
+  function resetCurrentSelection() {
+    currentTemp.value = temperatures.value[0];
+    currentBase.value = baseBeverages.value[2];
+    currentCreamer.value = creamerOptions.value[0];
+    currentSyrup.value = syrupOptions.value[0];
   }
 
   return {
-    selectedName,
-    selectedBase,
-    selectedCreamer,
-    selectedSyrup,
-    selectedTemp,
-    recipes,
-    makeBeverage,
-    showBeverage
+    // State
+    temperatures,
+    baseBeverages,
+    creamerOptions,
+    syrupOptions,
+    currentTemp,
+    currentBase,
+    currentCreamer,
+    currentSyrup,
+    savedRecipes,
+    
+    // Computed
+    currentBeverageDescription,
+    
+    // Actions
+    setTemperature,
+    setBase,
+    setCreamer,
+    setSyrup,
+    saveCurrentRecipe,
+    loadRecipe,
+    deleteRecipe,
+    clearAllRecipes,
+    resetCurrentSelection
   };
 });

@@ -1,12 +1,14 @@
 {
   "name": "custom-drink-maker",
   "private": true,
+  "homepage": "https://gvsu-cis371.github.io/assignment3-goodrist/",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "preview": "vite preview",
-    "build": "vue-tsc && vite build --base=./",
+    "build": "vue-tsc && vite build",
+    "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
@@ -28,3 +30,4 @@
     "vue-tsc": "^2.2.8"
   }
 }
+
