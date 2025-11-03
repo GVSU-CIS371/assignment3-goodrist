@@ -1,54 +1,64 @@
 <template>
-  <div class="steam-container">
-    <div class="steam steam1"></div>
-    <div class="steam steam2"></div>
+  <div>
+    <div class="stream"></div>
+    <div class="stream"></div>
+    <div class="stream"></div>
   </div>
 </template>
 
 <script setup lang="ts"></script>
 
 <style lang="scss" scoped>
-.steam-container {
-  position: absolute;
-  top: -60px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100px;
-  height: 60px;
-  z-index: 10;
-}
+@mixin risingSteam($dist, $duration, $delay) {
+  animation: move-and-fade $duration linear infinite;
+  animation-delay: $delay;
 
-.steam {
-  position: absolute;
-  width: 8px;
-  height: 50px;
-  background: rgba(139, 98, 66, 0.4);
-  border-radius: 50%;
-  animation: rise 3s ease-in-out infinite;
-}
+  @keyframes move-and-fade {
+    0% {
+      opacity: 0;
+      transform: translateY(0) rotate(90deg);
+    }
 
-.steam1 {
-  left: 30%;
-  animation-delay: 0s;
-}
+    50% {
+      opacity: 0.5;
+    }
 
-.steam2 {
-  left: 60%;
-  animation-delay: 1.5s;
-}
+    75% {
+      opacity: 0;
+    }
 
-@keyframes rise {
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: 0.7;
+    100% {
+      transform: translateY(-$dist) rotate(90deg);
+      opacity: 0;
+    }
   }
-  50% {
-    transform: translateY(-20px) scale(1.2);
-    opacity: 0.5;
+}
+
+.stream {
+  position: absolute;
+  transform: rotate(90deg);
+  height: 80px;
+  width: 80px;
+  margin-top: -55px;
+  opacity: 0;
+  @include risingSteam(15px, 2.5s, 0.4s);
+
+  &:before {
+    position: absolute;
+    content: "~";
+    font-size: 70px;
+    color: #8b6f47;
   }
-  100% {
-    transform: translateY(-40px) scale(0.8);
-    opacity: 0;
+
+  &:first-child {
+    margin-left: 20px;
+    margin-top: -70px;
+    @include risingSteam(10px, 2.5s, 0.2s);
+  }
+
+  &:last-child {
+    margin-left: 40px;
+    @include risingSteam(20px, 2.5s, 0s);
   }
 }
 </style>
